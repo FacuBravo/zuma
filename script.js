@@ -313,10 +313,10 @@ function drawLevelBalls() {
 
         let x = (1 - currentProgress) * currentCordinate[0] * canvas.width + currentProgress * nextCordinate[0] * canvas.width
         let y = (1 - currentProgress) * currentCordinate[1] * canvas.height + currentProgress * nextCordinate[1] * canvas.height
-        let leftExtreme = x - ballRadius                
-        let rightExtreme = x + ballRadius                
-        let topExtreme = y - ballRadius            
-        let bottomExtreme = y + ballRadius            
+        let leftExtreme = x - ballRadius
+        let rightExtreme = x + ballRadius
+        let topExtreme = y - ballRadius
+        let bottomExtreme = y + ballRadius
 
         joinFrezzedBalls(leftExtreme, rightExtreme, topExtreme, bottomExtreme)
 
@@ -369,6 +369,14 @@ function drawLevelBalls() {
 function joinFrezzedBalls(leftExtreme, rightExtreme, topExtreme, bottomExtreme) {
     if (levelBallsFrezzed.length > 0) {
         if ((leftExtreme <= levelBallsFrezzed[0][0].rightExtreme && rightExtreme >= levelBallsFrezzed[0][0].leftExtreme) && (topExtreme <= levelBallsFrezzed[0][0].bottomExtreme && bottomExtreme >= levelBallsFrezzed[0][0].topExtreme)) {
+            while (levelBallsFrezzed[0].length > 0) {
+                levelBalls.push(levelBallsFrezzed[0][0])
+                ballColors.splice(0, 0, levelBallsFrezzed[0][0].color)
+                count++
+                levelBallsFrezzed[0].splice(0, 1)
+            }
+            levelBallsFrezzed.splice(0, 1)
+        } else if (levelBallsFrezzed[0][0].color == ballColors[0]) {
             while (levelBallsFrezzed[0].length > 0) {
                 levelBalls.push(levelBallsFrezzed[0][0])
                 ballColors.splice(0, 0, levelBallsFrezzed[0][0].color)
@@ -505,11 +513,33 @@ function destroyBalls(index, color) {
         if (aux.length > 0) {
             levelBallsFrezzed.splice(0, 0, aux)
         }
-            
 
-        ballColors.splice(0, quantity)
-        levelBalls.splice(indexToDelete, quantity)
-        count -= quantity
+        if (quantity > count) {
+            ballColors = [pickColor()]
+            let currentCordinate = ballsCordinates[0]
+            let nextCordinate = ballsCordinates[1]
+    
+            let x = (1 - currentProgress) * currentCordinate[0] * canvas.width + currentProgress * nextCordinate[0] * canvas.width
+            let y = (1 - currentProgress) * currentCordinate[1] * canvas.height + currentProgress * nextCordinate[1] * canvas.height
+            let leftExtreme = x - ballRadius
+            let rightExtreme = x + ballRadius
+            let topExtreme = y - ballRadius
+            let bottomExtreme = y + ballRadius
+            levelBalls = [{
+                x: x,
+                y: y,
+                leftExtreme: leftExtreme,
+                rightExtreme: rightExtreme,
+                topExtreme: topExtreme,
+                bottomExtreme: bottomExtreme,
+                color: ballColors[0]
+            }]
+            count = 0
+        } else {
+            ballColors.splice(0, quantity)
+            levelBalls.splice(indexToDelete, quantity)
+            count -= quantity
+        }
 
         return true
     }
